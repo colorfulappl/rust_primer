@@ -1,0 +1,7 @@
+[book]
+authors = ["CC"]
+language = "zh"
+multilingual = false
+src = "src"
+title = "Rust 入门"
+description = "Rust入门教程。"
