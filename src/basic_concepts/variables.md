@@ -13,6 +13,7 @@ println!("num: {}", num);
 
 ```rust
 let a = 1; // a的默认类型是i32
+
 let b: u64 = 1; // 显示声明b的类型为u64
 ```
 
