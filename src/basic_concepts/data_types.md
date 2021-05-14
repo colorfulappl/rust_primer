@@ -1,4 +1,4 @@
-# 数据类型
+# 基础数据类型
 
 Rust是**静态类型**的语言，编译器需要在编译阶段知道所有变量的类型。
 
@@ -30,7 +30,7 @@ error[E0282]: type annotations needed
 
 ## 标量类型
 
-一个**标量**（Scalar）类型代表一个单独的值。
+一个**标量**（scalar）类型代表一个单独的值。
 
 Rust 有四种基本的标量类型：整型（integers）、浮点型（float-point numbers）、布尔类型（Booleans）和字符（characters）类型。
 
@@ -127,5 +127,96 @@ let z = 'ℤ';
 let heart_eyed_cat = '😻';
 ```
 
-`char` 类型的大小为4个字节，代表了一个 Unicode 标量值（Unicode Scalar Value），这意味着它可以比 ASCII 表示更大的字符集。在 Rust 中，拼音字母（Accented letters），中文、日文、韩文等字符，emoji（绘文字）以及零长度的空白字符都是有效的 `char` 值。Unicode 标量值包含从 `U+0000` 到 `U+D7FF` 和 `U+E000` 到 `U+10FFFF` 在内的值。
+`char` 类型的大小为4个字节，代表了一个 Unicode 标量值，这意味着它可以比 ASCII 表示更大的字符集。在 Rust 中，注音字母（accented letters）、中文、日文、韩文、emoji以及零长度的空白字符等都是有效的 `char` 值。Unicode 标量值包含从 `U+0000` 到 `U+D7FF` 和 `U+E000` 到 `U+10FFFF` 在内的值。
+
+## 复合类型
+
+**复合类型**（*compound types*）可以将多个值组合成一个类型。Rust 有两个原生的复合类型：元组（tuple）和数组（array）。
+
+### 元组
+
+元组可以将多个不同类型的值组合成一个复合类型。**元组的长度固定**：一旦声明，其长度不能增大或减小。
+
+我们使用包含在圆括号中的逗号分隔的值列表来创建元组。元组中的每一个位置都有一个类型，这些类型可以不同。
+
+下面的例子使用了可选的类型注释：
+
+```rust
+let tup: (i32, f64, char) = (100, 6.4, 'c');
+```
+
+#### 访问元组元素
+
+`tup`变量绑定到整个元组，如果要访问元组的某个值，可以使用点号（`.`）加上值的索引。
+
+例如：
+
+```rust
+let tup: (i32, f64, char) = (100, 6.4, 'c');
+
+println!("1st element: {}", tup.0);
+
+println!("2nd element: {}", tup.1);
+
+println!("3rd element: {}", tup.2);
+```
+
+也可以使用模式匹配（pattern matching）来解构（destructure）一个元组，例如：
+
+```rust
+let tup: (i32, f64, char) = (100, 6.4, 'c');
+
+let (x, y, z) = tup; // 解构元组tup
+
+println!("1st element: {}", x);
+
+println!("2nd element: {}", y);
+
+println!("3rd element: {}", z);
+```
+
+### 数组
+
+数组也可以包含多个值，但是与元组不同，数组中的每个元素的类型必须相同。**数组的长度也是固定的**。
+
+我们使用包含在中括号中的逗号分隔的值列表来创建元组。
+
+```rust
+let arr = [1, 2, 3, 4, 5];
+```
+
+数组通常用于在栈（stack）而不是堆（heap）上为数据分配空间，或者保有固定数量的元素。
+
+标准库`std`还提供了一个相似的，**可变长**的集合类型`Vec`。
+
+#### 数组的类型
+
+数组的类型声明格式为`[type; length]`，例如：
+
+```rust
+let arr: [i32; 5] = [1, 2, 3, 4, 5];
+```
+
+#### 数组的初始化
+
+除了直接给定一个序列，数组也可以用`[init_value; length]`的表达式进行初始化，声明一个长度为`length`，每个元素的值为`init_value`的数组，例如：
+
+```rust
+let arr = [0; 5];
+
+println!("{:?}", arr);
+// #[0, 0, 0, 0, 0]
+```
+
+#### 访问数组元素
+
+数组是一整块分配在栈上的内存，可以使用索引来访问数组的元素。
+
+```rust
+let arr = [1, 2, 3, 4, 5];
+
+println!("1st element: {}", arr[0]);
+
+println!("2nd element: {}", arr[1]);
+```
 
