@@ -14,7 +14,7 @@ let number: u32 = "42".parse().expect("Not a number!");
 
 如果我们删除该类型注释，编译器无法推断出`parse`结果的类型，会抛出编译错误。
 
-```rust,ignore
+```rust,ignore,does_not_compile
 let number = "42".parse().expect("Not a number!");
 ```
 

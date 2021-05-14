@@ -23,7 +23,7 @@ let b: u64 = 1; // 显示声明b的类型为u64
 
 对不可变绑定进行修改会导致编译错误。Rust编译器的所有错误号可以在 [Rust Compiler Error Index](https://doc.rust-lang.org/error-index.html) 查看。
 
-```rust,ignore
+```rust,ignore,does_not_compile
 let num = 10;
 num = 20; // error[E0384]: cannot assign twice to immutable variable `num`
 println!("num: {}", num);
