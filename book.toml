@@ -5,3 +5,7 @@ multilingual = false
 src = "src"
 title = "Rust 入门"
 description = "Rust入门教程。"
+
+[output.html]
+additional-css = ["ferris.css"]
+additional-js = ["ferris.js"]
