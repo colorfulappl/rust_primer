@@ -15,7 +15,7 @@
   <!-- - [哈希表](./collections/hash_map.md) -->
 - [Rust的内存管理](./memory_management.md)
   - [所有权](./memory_management/ownership.md)
-  <!-- - [引用与借用](./memory_management/reference_and_borrowing.md) -->
+  - [引用与借用](./memory_management/reference_and_borrowing.md)
   <!-- - [生命周期](./memory_management/lifetime.md) -->
   <!-- - [切片类型](./memory_management/slice.md) -->
 <!-- - [模式匹配](./matching.md) -->
