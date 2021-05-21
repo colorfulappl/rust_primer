@@ -90,7 +90,7 @@ error[E0382]: borrow of moved value: `mascot`
 
 ## 数据的克隆
 
-如果确实需要复制变量绑定的数据，这类似于其它语言中的**深拷贝**（deep copy），我们可以使用通用的方法`.clone()`。
+如果确实需要拷贝变量绑定的数据，这类似于其它语言中的**深拷贝**（deep copy），我们可以使用通用的方法`.clone()`。
 
 例如：
 
@@ -101,11 +101,11 @@ let s2 = s1.clone();
 println!("s1 = {}, s2 = {}", s1, s2);
 ```
 
-这段代码能正常运行，在调用`.clone()`时，`String`在堆上的数据被复制了一份，并绑定到了`s2`。
+这段代码能正常运行，在调用`.clone()`时，`String`在堆上的数据被拷贝了一份，并绑定到了`s2`。
 
 由于对数据的拷贝可能会消耗大量的时间，所以Rust被设计为不会隐式创建数据的“**深拷贝**”。
 
-## `Copy` trait：复制而非拷贝
+## `Copy` trait：拷贝而非移动
 
 在前面的例子中，我们需要使用`.clone()`方法显式地拷贝`String`，但是如果换成`i32`类型，例如：
 
@@ -116,7 +116,7 @@ let y = x;
 println!("x = {}, y = {}", x, y);
 ```
 
-在这段代码中，我们没有调用`.clone()`，但是`x`依然有效且没有被移动到`y`中。
+在这段代码中，我们没有调用`.clone()`，但是`x`依然有效且没有被**移动**到`y`中。
 
 原因是像整型这样的在编译时已知大小的类型被整个存储在栈上，所以可以快速地拷贝其值，Rust没有理由在创建变量 `y` 后使 `x` 无效。换句话说，这里没有深浅拷贝的区别。
 
@@ -129,3 +129,65 @@ println!("x = {}, y = {}", x, y);
 - 所有浮点数类型，比如 `f64`。
 - 字符类型，`char`。
 - 元组，当且仅当其包含的类型也都是 `Copy` 的时候。比如，`(i32, i32)` 是 `Copy` 的，但 `(i32, String)` 就不是。
+
+## 所有权与函数
+
+将值传递给函数时，该值也会发生**移动**或**拷贝**。
+
+例如：
+
+```rust
+fn main() {
+    let s = String::from("hello");  // s 进入作用域
+
+    takes_ownership(s);             // s 的值移动到函数里，所以到这里不再有效
+
+    let x = 5;                      // x 进入作用域
+
+    makes_copy(x);                  // x 应该移动函数里，但i32具有Copy trait，所以在后面可继续使用x
+} // 这里，x先移出了作用域，然后是s
+  // 但因为s的值已被移走，所以不会有特殊操作
+
+fn takes_ownership(some_string: String) { // some_string 进入作用域
+    println!("{}", some_string);
+} // 这里，some_string移出作用域并调用`drop`方法，占用的内存被释放
+
+fn makes_copy(some_integer: i32) { // some_integer 进入作用域
+    println!("{}", some_integer);
+} // 这里，some_integer移出作用域，但i32是一个简单标量，所以不会有特殊操作
+```
+
+在调用 `takes_ownership` 时`s`发生了**移动**，如果之后再次使用 `s` ，Rust 会抛出一个编译时错误。
+
+在`makes_copy`之后可以继续使用`x`，因为`x`具有`Copy`trait。
+
+## 返回值与作用域
+
+将返回值绑定到变量也会发生**移动**，并且遵循作用域规则。
+
+例如：
+
+```rust
+fn main() {
+    let s1 = gives_ownership();         // gives_ownership将返回值绑定到s1，返回值被移动
+
+    let s2 = String::from("hello");     // s2进入作用域
+
+    let s3 = takes_and_gives_back(s2);  // s2被移动到takes_and_gives_back中，该函数返回值移给s3
+} // 这里，s3移出作用域并被丢弃
+  // s2也移出作用域，但由于已被移走，所以什么也不会发生
+  // s1移出作用域并被丢弃
+
+fn gives_ownership() -> String {             // gives_ownership将返回值移动给调用它的函数
+    let some_string = String::from("hello"); // some_string进入作用域
+
+    some_string                              // 返回some_string并移出给调用的函数
+}
+
+// takes_and_gives_back将传入的符串返回
+fn takes_and_gives_back(a_string: String) -> String { // a_string进入作用域
+    a_string  // 返回 a_string 并移出给调用的函数
+}
+```
+
+在`main`函数的结尾，在`gives_ownership`函数中被定义，然后绑定到`s1`的`String`被丢弃；先**移动**到`s2`，最终经由`takes_and_gives_back`函数调用**移动**到`s3`的`String`也被丢弃。
